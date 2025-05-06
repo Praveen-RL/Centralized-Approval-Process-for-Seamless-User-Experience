@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="page-title">Citizen Dashboard</h1>
+            <p class="welcome-message">Welcome, {{ current_user.full_name }}!</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card dashboard-stat">
+                <div class="card-body text-center">
+                    <i class="fas fa-home stat-icon"></i>
+                    <h3 class="stat-count">{{ property_count }}</h3>
+                    <p class="stat-label">Registered Properties</p>
+                    <a href="{{ url_for('property.list') }}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dashboard-stat">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock stat-icon"></i>
+                    <h3 class="stat-count">{{ pending_count }}</h3>
+                    <p class="stat-label">Pending Approvals</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dashboard-stat">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle stat-icon"></i>
+                    <h3 class="stat-count">{{ approved_count }}</h3>
+                    <p class="stat-label">Approved Applications</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dashboard-stat">
+                <div class="card-body text-center">
+                    <i class="fas fa-times-circle stat-icon"></i>
+                    <h3 class="stat-count">{{ rejected_count }}</h3>
+                    <p class="stat-label">Rejected Applications</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">Recent Approval Activities</h2>
+                </div>
+                <div class="card-body">
+                    {% if recent_approvals %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Property</th>
+                                        <th>Approval Type</th>
+                                        <th>Status</th>
+                                        <th>Last Updated</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for approval in recent_approvals %}
+                                        <tr>
+                                            <td>{{ approval.property.address|truncate(20) }}</td>
+                                            <td>{{ approval.approval_type.value|capitalize }}</td>
+                                            <td>
+                                                {% if approval.status.value == 'pending' %}
+                                                    <span class="badge bg-warning">Pending</span>
+                                                {% elif approval.status.value == 'in_review' %}
+                                                    <span class="badge bg-info">In Review</span>
+                                                {% elif approval.status.value == 'approved' %}
+                                                    <span class="badge bg-success">Approved</span>
+                                                {% elif approval.status.value == 'rejected' %}
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                {% elif approval.status.value == 'additional_info_needed' %}
+                                                    <span class="badge bg-secondary">Info Needed</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ approval.last_updated.strftime('%d-%m-%Y') }}</td>
+                                            <td>
+                                                <a href="{{ url_for('approval.status', approval_id=approval.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center p-4">
+                            <i class="fas fa-folder-open fa-3x mb-3 text-muted"></i>
+                            <p>No approval applications yet.</p>
+                            <p>Register a property and apply for approvals to see them here.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">Quick Actions</h2>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="{{ url_for('property.register') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Register New Property</h5>
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <p class="mb-1">Add a new property to your account</p>
+                        </a>
+                        <a href="{{ url_for('property.list') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">View My Properties</h5>
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <p class="mb-1">Manage your registered properties</p>
+                        </a>
+                        <a href="{{ url_for('user.profile') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Update Profile</h5>
+                                <i class="fas fa-user-edit"></i>
+                            </div>
+                            <p class="mb-1">Update your personal information</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

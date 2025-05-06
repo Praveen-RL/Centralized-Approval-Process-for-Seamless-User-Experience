@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="page-title">Approval Details</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.approval_requests') }}">Approval Requests</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Approval #{{ approval.id }}</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('admin.approval_requests') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Back to Requests
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Request Information</h2>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3>{{ approval.approval_type.value|capitalize }} Approval</h3>
+                        {% if approval.status.value == 'pending' %}
+                            <span class="badge bg-warning">Pending</span>
+                        {% elif approval.status.value == 'in_review' %}
+                            <span class="badge bg-info">In Review</span>
+                        {% elif approval.status.value == 'approved' %}
+                            <span class="badge bg-success">Approved</span>
+                        {% elif approval.status.value == 'rejected' %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% elif approval.status.value == 'additional_info_needed' %}
+                            <span class="badge bg-secondary">Additional Info Needed</span>
+                        {% endif %}
+                    </div>
+                    
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Application ID</th>
+                                <td>{{ approval.id }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Application Date</th>
+                                <td>{{ approval.application_date.strftime('%d-%m-%Y') }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Last Updated</th>
+                                <td>{{ approval.last_updated.strftime('%d-%m-%Y') }}</td>
+                            </tr>
+                            {% if approval.approved_date %}
+                                <tr>
+                                    <th scope="row">Approval Date</th>
+                                    <td>{{ approval.approved_date.strftime('%d-%m-%Y') }}</td>
+                                </tr>
+                            {% endif %}
+                            <tr>
+                                <th scope="row">Applicant Notes</th>
+                                <td>{{ approval.additional_notes or 'None provided' }}</td>
+                            </tr>
+                            {% if approval.admin_notes %}
+                                <tr>
+                                    <th scope="row">Admin Notes</th>
+                                    <td>{{ approval.admin_notes }}</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Applicant & Property Information</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h3>Applicant Details</h3>
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Name</th>
+                                    <td>{{ owner.full_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Email</th>
+                                    <td>{{ owner.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Phone</th>
+                                    <td>{{ owner.phone }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div>
+                        <h3>Property Details</h3>
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Patta Number</th>
+                                    <td>{{ property.patta_number }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Chitta Number</th>
+                                    <td>{{ property.chitta_number }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Address</th>
+                                    <td>{{ property.address }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Location</th>
+                                    <td>{{ property.village }}, {{ property.taluk }}, {{ property.district }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Area (sq.ft.)</th>
+                                    <td>{{ property.area_sqft }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Document Preview</h2>
+                </div>
+                <div class="card-body">
+                    {% if document_path %}
+                        <div class="pdf-container">
+                            <canvas id="pdf-render" class="pdf-preview"></canvas>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button id="prev-page" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Previous
+                            </button>
+                            <span id="page-num" class="mx-2">1</span> of <span id="page-count" class="mx-2">?</span>
+                            <button id="next-page" class="btn btn-sm btn-outline-secondary">
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{{ document_path }}" class="btn btn-primary" target="_blank">
+                                <i class="fas fa-download"></i> Download PDF
+                            </a>
+                        </div>
+                        
+                        <script>
+                            // PDF.js viewing functionality
+                            const url = '{{ document_path }}';
+                            
+                            let pdfDoc = null,
+                                pageNum = 1,
+                                pageRendering = false,
+                                pageNumPending = null,
+                                scale = 1.5,
+                                canvas = document.getElementById('pdf-render'),
+                                ctx = canvas.getContext('2d');
+                            
+                            function renderPage(num) {
+                                pageRendering = true;
+                                
+                                // Using promise to fetch the page
+                                pdfDoc.getPage(num).then(function(page) {
+                                    const viewport = page.getViewport({scale: scale});
+                                    canvas.height = viewport.height;
+                                    canvas.width = viewport.width;
+                                    
+                                    // Render PDF page into canvas context
+                                    const renderContext = {
+                                        canvasContext: ctx,
+                                        viewport: viewport
+                                    };
+                                    
+                                    const renderTask = page.render(renderContext);
+                                    
+                                    // Wait for rendering to finish
+                                    renderTask.promise.then(function() {
+                                        pageRendering = false;
+                                        
+                                        if (pageNumPending !== null) {
+                                            // New page rendering is pending
+                                            renderPage(pageNumPending);
+                                            pageNumPending = null;
+                                        }
+                                    });
+                                });
+                                
+                                // Update page counters
+                                document.getElementById('page-num').textContent = num;
+                            }
+                            
+                            function queueRenderPage(num) {
+                                if (pageRendering) {
+                                    pageNumPending = num;
+                                } else {
+                                    renderPage(num);
+                                }
+                            }
+                            
+                            function onPrevPage() {
+                                if (pageNum <= 1) {
+                                    return;
+                                }
+                                pageNum--;
+                                queueRenderPage(pageNum);
+                            }
+                            
+                            function onNextPage() {
+                                if (pageNum >= pdfDoc.numPages) {
+                                    return;
+                                }
+                                pageNum++;
+                                queueRenderPage(pageNum);
+                            }
+                            
+                            document.getElementById('prev-page').addEventListener('click', onPrevPage);
+                            document.getElementById('next-page').addEventListener('click', onNextPage);
+                            
+                            // Load the PDF
+                            pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+                                pdfDoc = pdfDoc_;
+                                document.getElementById('page-count').textContent = pdfDoc.numPages;
+                                
+                                // Initial render
+                                renderPage(pageNum);
+                            });
+                        </script>
+                    {% else %}
+                        <div class="text-center p-5">
+                            <i class="fas fa-file-pdf fa-4x mb-3 text-muted"></i>
+                            <h3>Document Not Available</h3>
+                            <p>The document for this approval could not be found or accessed.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Decision Form</h2>
+                </div>
+                <div class="card-body">
+                    {% if approval.status.value == 'approved' or approval.status.value == 'rejected' %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> This application has already been 
+                            {% if approval.status.value == 'approved' %}
+                                <strong>approved</strong> on {{ approval.approved_date.strftime('%d-%m-%Y') }}.
+                            {% else %}
+                                <strong>rejected</strong>.
+                            {% endif %}
+                            <p class="mb-0">Admin notes: {{ approval.admin_notes }}</p>
+                        </div>
+                    {% else %}
+                        <form method="POST" action="{{ url_for('admin.approval_detail', approval_id=approval.id) }}">
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="mb-3">
+                                {{ form.status.label(class="form-label") }}
+                                {% if form.status.errors %}
+                                    {{ form.status(class="form-select is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.status.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.status(class="form-select") }}
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.admin_notes.label(class="form-label") }}
+                                {% if form.admin_notes.errors %}
+                                    {{ form.admin_notes(class="form-control is-invalid", rows=5) }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.admin_notes.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.admin_notes(class="form-control", rows=5, placeholder="Provide detailed feedback and instructions for the applicant...") }}
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                {{ form.submit(class="btn btn-primary") }}
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

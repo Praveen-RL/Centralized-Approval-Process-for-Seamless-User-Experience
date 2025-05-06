@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="page-title">Approval Requests</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Approval Requests</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="form-group">
+                <label for="status-filter" class="form-label">Filter by Status:</label>
+                <select id="status-filter" class="form-select">
+                    <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Requests</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="in_review" {% if status_filter == 'in_review' %}selected{% endif %}>In Review</option>
+                    <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                    <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                    <option value="additional_info_needed" {% if status_filter == 'additional_info_needed' %}selected{% endif %}>Additional Info Needed</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">
+                        {% if status_filter != 'all' %}
+                            {{ status_filter|replace('_', ' ')|capitalize }} 
+                        {% endif %}
+                        Approval Requests
+                    </h2>
+                </div>
+                <div class="card-body">
+                    {% if approvals %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Applicant</th>
+                                        <th>Property</th>
+                                        <th>Approval Type</th>
+                                        <th>Status</th>
+                                        <th>Application Date</th>
+                                        <th>Last Updated</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for approval in approvals %}
+                                        <tr>
+                                            <td>{{ approval.id }}</td>
+                                            <td>{{ approval.property.owner.full_name }}</td>
+                                            <td>{{ approval.property.address|truncate(20) }}</td>
+                                            <td>{{ approval.approval_type.value|capitalize }}</td>
+                                            <td>
+                                                {% if approval.status.value == 'pending' %}
+                                                    <span class="badge bg-warning">Pending</span>
+                                                {% elif approval.status.value == 'in_review' %}
+                                                    <span class="badge bg-info">In Review</span>
+                                                {% elif approval.status.value == 'approved' %}
+                                                    <span class="badge bg-success">Approved</span>
+                                                {% elif approval.status.value == 'rejected' %}
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                {% elif approval.status.value == 'additional_info_needed' %}
+                                                    <span class="badge bg-secondary">Info Needed</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ approval.application_date.strftime('%d-%m-%Y') }}</td>
+                                            <td>{{ approval.last_updated.strftime('%d-%m-%Y') }}</td>
+                                            <td>
+                                                <a href="{{ url_for('admin.approval_detail', approval_id=approval.id) }}" class="btn btn-sm btn-outline-primary">Review</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center p-5">
+                            <i class="fas fa-folder-open fa-4x mb-3 text-muted"></i>
+                            <h3>No Approval Requests Found</h3>
+                            <p>There are no approval requests matching your current filter criteria.</p>
+                            {% if status_filter != 'all' %}
+                                <a href="{{ url_for('admin.approval_requests') }}" class="btn btn-primary mt-3">View All Requests</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron p-5 mb-4 bg-light rounded-3">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold">Tamil Nadu Government</h1>
+                <h2 class="tamil-text">தமிழ்நாடு அரசு</h2>
+                <h3 class="mb-4">House Construction Approval System</h3>
+                <p class="fs-5">A centralized single-window portal for citizens to apply for all construction approvals from the comfort of their homes.</p>
+                {% if not current_user.is_authenticated %}
+                    <div class="mt-4">
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg me-2">Register Now</a>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg">Login</a>
+                    </div>
+                {% else %}
+                    <div class="mt-4">
+                        <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-4 text-center">
+                <img src="{{ url_for('static', filename='images/tn_emblem.svg') }}" alt="Tamil Nadu Emblem" class="img-fluid" style="max-height: 200px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-md-12 text-center">
+            <h2 class="section-title">One Platform for All Construction Approvals</h2>
+            <p class="section-subtitle">Apply, track, and receive approvals digitally</p>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-3">
+            <div class="card h-100 approval-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-map-marked-alt approval-icon mb-3"></i>
+                    <h3 class="card-title">Land Approval</h3>
+                    <p class="card-text">Get your land approved by the Revenue Department for construction purposes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 approval-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-water approval-icon mb-3"></i>
+                    <h3 class="card-title">Water Supply</h3>
+                    <p class="card-text">Apply for water connection approval from the Municipality.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 approval-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-bolt approval-icon mb-3"></i>
+                    <h3 class="card-title">Electricity</h3>
+                    <p class="card-text">Get electrical connection approval from TANGEDCO.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 approval-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-toilet approval-icon mb-3"></i>
+                    <h3 class="card-title">Sewage & Sanitation</h3>
+                    <p class="card-text">Obtain sewage connection and sanitation approval from Local Bodies.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-12 text-center">
+            <h2 class="section-title">How It Works</h2>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div class="text-center process-step">
+                <div class="process-icon">1</div>
+                <h3>Register Your Property</h3>
+                <p>Register your property with Patta Number, Chitta Number, and Property Address details.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center process-step">
+                <div class="process-icon">2</div>
+                <h3>Submit Applications</h3>
+                <p>Upload required documents and submit applications for the necessary approvals.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center process-step">
+                <div class="process-icon">3</div>
+                <h3>Track & Get Approvals</h3>
+                <p>Track application status and receive approved certificates directly in your account.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-12 text-center">
+            <h2 class="section-title">Benefits</h2>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div class="benefit-item">
+                <i class="fas fa-clock benefit-icon"></i>
+                <h3>Save Time</h3>
+                <p>No more multiple visits to government offices. Apply for all approvals online.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="benefit-item">
+                <i class="fas fa-shield-alt benefit-icon"></i>
+                <h3>Secure Process</h3>
+                <p>Secure document uploads and OTP-based verification for government officials.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="benefit-item">
+                <i class="fas fa-chart-line benefit-icon"></i>
+                <h3>Real-time Tracking</h3>
+                <p>Track your application status in real-time and receive email notifications.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

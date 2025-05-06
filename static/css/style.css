@@ -1,0 +1,344 @@
+/* Tamil Nadu Government House Construction Approval System CSS */
+
+/* Base Styles */
+:root {
+    --primary-color: #0A3D7C; /* Tamil Nadu Government blue */
+    --secondary-color: #00578E;
+    --accent-color: #F3AB00; /* Gold accent */
+    --light-color: #F8F9FA;
+    --dark-color: #172B4D;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    background-color: #f5f7fa;
+    line-height: 1.6;
+}
+
+/* Tamil Font for Bilingual Support */
+.tamil-text {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-weight: 500;
+}
+
+/* Header and Footer */
+.navbar-dark.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.navbar-brand {
+    padding: 0.5rem 0;
+}
+
+.govt-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.govt-subtitle {
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+.footer {
+    background-color: #e9ecef !important;
+    border-top: 5px solid var(--primary-color);
+}
+
+.footer h5 {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.footer a {
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* Page Titles */
+.page-title {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent-color);
+    display: inline-block;
+    padding-bottom: 0.25rem;
+}
+
+.welcome-message {
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    border-bottom: none;
+    background-color: #fff;
+    font-weight: 600;
+}
+
+.card-header.bg-primary {
+    background-color: var(--primary-color) !important;
+    color: white;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+/* Home Page */
+.jumbotron {
+    background-color: #fff;
+    border-left: 5px solid var(--primary-color);
+}
+
+.section-title {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    color: var(--secondary-color);
+    margin-bottom: 2rem;
+}
+
+/* Approval Cards on Home */
+.approval-card {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.approval-card:hover {
+    transform: translateY(-5px);
+}
+
+.approval-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+/* Process Steps */
+.process-step {
+    padding: 1.5rem;
+}
+
+.process-icon {
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0 auto 1rem;
+}
+
+/* Benefits */
+.benefit-item {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.benefit-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+/* Dashboard Stats */
+.dashboard-stat {
+    text-align: center;
+    padding: 1rem;
+}
+
+.stat-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.stat-count {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    color: var(--dark-color);
+    font-weight: 500;
+}
+
+/* Admin Dashboard Stats */
+.dashboard-stats .stat-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.dashboard-stats .stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    color: white;
+}
+
+.dashboard-stats .stat-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-stats .stat-count {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+}
+
+.dashboard-stats .stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Property List */
+.property-title {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.property-details p {
+    margin-bottom: 0.5rem;
+}
+
+.approval-icons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.approval-icon {
+    text-align: center;
+    opacity: 0.4;
+    transition: opacity 0.3s ease;
+}
+
+.approval-icon.has-approval {
+    opacity: 1;
+}
+
+.approval-icon i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.approval-icon span {
+    display: block;
+    font-size: 0.8rem;
+}
+
+/* Profile */
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.profile-icon {
+    font-size: 4rem;
+    color: var(--primary-color);
+    margin-right: 1.5rem;
+}
+
+.profile-info h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.profile-info p {
+    margin-bottom: 0.25rem;
+    color: #555;
+}
+
+/* PDF Preview */
+.pdf-container {
+    border: 1px solid #ddd;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.pdf-preview {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+}
+
+/* Empty States */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.empty-state i {
+    color: #ccc;
+    margin-bottom: 1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .jumbotron h1 {
+        font-size: 2rem;
+    }
+    
+    .approval-icons {
+        flex-wrap: wrap;
+    }
+    
+    .approval-icon {
+        width: 50%;
+        margin-bottom: 1rem;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .profile-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .dashboard-stats .row {
+        flex-direction: column;
+    }
+    
+    .dashboard-stats .stat-item {
+        margin-bottom: 1rem;
+    }
+}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Register New Property</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <p><i class="fas fa-info-circle"></i> Please enter accurate property details as they appear in your official documents.</p>
+                        <p class="mb-0">All information will be verified by government officials during the approval process.</p>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('property.register') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form.patta_number.label(class="form-label") }}
+                                {% if form.patta_number.errors %}
+                                    {{ form.patta_number(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.patta_number.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.patta_number(class="form-control") }}
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                {{ form.chitta_number.label(class="form-label") }}
+                                {% if form.chitta_number.errors %}
+                                    {{ form.chitta_number(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.chitta_number.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.chitta_number(class="form-control") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.address.label(class="form-label") }}
+                            {% if form.address.errors %}
+                                {{ form.address(class="form-control is-invalid", rows=3) }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.address.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.address(class="form-control", rows=3) }}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                {{ form.district.label(class="form-label") }}
+                                {% if form.district.errors %}
+                                    {{ form.district(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.district.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.district(class="form-control") }}
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4">
+                                {{ form.taluk.label(class="form-label") }}
+                                {% if form.taluk.errors %}
+                                    {{ form.taluk(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.taluk.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.taluk(class="form-control") }}
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4">
+                                {{ form.village.label(class="form-label") }}
+                                {% if form.village.errors %}
+                                    {{ form.village(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.village.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.village(class="form-control") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.area_sqft.label(class="form-label") }}
+                            {% if form.area_sqft.errors %}
+                                {{ form.area_sqft(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.area_sqft.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.area_sqft(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

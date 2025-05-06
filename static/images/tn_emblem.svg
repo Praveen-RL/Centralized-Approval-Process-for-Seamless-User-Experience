@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <!-- Tamil Nadu State Emblem -->
+  <defs>
+    <clipPath id="circleClip">
+      <circle cx="200" cy="200" r="180"/>
+    </clipPath>
+  </defs>
+  
+  <!-- Background -->
+  <circle cx="200" cy="200" r="180" fill="#F8F9FA"/>
+  
+  <!-- Temple Structure -->
+  <g clip-path="url(#circleClip)">
+    <!-- Temple Base -->
+    <rect x="100" y="280" width="200" height="30" fill="#0A3D7C"/>
+    
+    <!-- Temple Steps -->
+    <rect x="110" y="270" width="180" height="10" fill="#0A3D7C"/>
+    <rect x="120" y="260" width="160" height="10" fill="#0A3D7C"/>
+    
+    <!-- Temple Pillars -->
+    <rect x="130" y="150" width="20" height="110" fill="#0A3D7C"/>
+    <rect x="250" y="150" width="20" height="110" fill="#0A3D7C"/>
+    <rect x="170" y="150" width="20" height="110" fill="#0A3D7C"/>
+    <rect x="210" y="150" width="20" height="110" fill="#0A3D7C"/>
+    
+    <!-- Temple Top -->
+    <rect x="120" y="140" width="160" height="10" fill="#0A3D7C"/>
+    <rect x="110" y="130" width="180" height="10" fill="#0A3D7C"/>
+    <rect x="100" y="120" width="200" height="10" fill="#0A3D7C"/>
+    
+    <!-- Temple Dome -->
+    <path d="M200,60 Q260,120 300,120 L100,120 Q140,120 200,60 Z" fill="#0A3D7C"/>
+    
+    <!-- Temple Flag -->
+    <rect x="190" y="30" width="5" height="30" fill="#0A3D7C"/>
+    <rect x="195" y="30" width="15" height="10" fill="#F3AB00"/>
+  </g>
+  
+  <!-- Border Rings -->
+  <circle cx="200" cy="200" r="180" fill="none" stroke="#0A3D7C" stroke-width="6"/>
+  <circle cx="200" cy="200" r="190" fill="none" stroke="#F3AB00" stroke-width="2"/>
+  
+  <!-- Ashoka Pillar Lions -->
+  <circle cx="200" cy="90" r="25" fill="#F3AB00"/>
+  <path d="M185,80 Q200,65 215,80 Q220,85 215,90 L200,100 L185,90 Q180,85 185,80 Z" fill="#0A3D7C"/>
+  
+  <!-- Text - will appear as a curved banner beneath -->
+  <path id="curve" d="M50,320 Q200,380 350,320" fill="none"/>
+  <text font-family="Arial" font-size="20" font-weight="bold" fill="#0A3D7C">
+    <textPath href="#curve" text-anchor="middle" startOffset="50%">GOVERNMENT OF TAMIL NADU</textPath>
+  </text>
+</svg>

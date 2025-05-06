@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="page-title">Apply for Approval</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('property.list') }}">My Properties</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('property.detail', property_id=property.id) }}">Property Details</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Apply for Approval</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('property.detail', property_id=property.id) }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Back to Property
+            </a>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Approval Application Form</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <p><i class="fas fa-info-circle"></i> Please upload relevant documents in PDF format only.</p>
+                        <p class="mb-0">Make sure all the information in the documents is accurate and matches your property details.</p>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('approval.apply', property_id=property.id) }}" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.approval_type.label(class="form-label") }}
+                            {% if form.approval_type.errors %}
+                                {{ form.approval_type(class="form-select is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.approval_type.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.approval_type(class="form-select") }}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.document.label(class="form-label") }}
+                            {% if form.document.errors %}
+                                {{ form.document(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.document.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.document(class="form-control") }}
+                            {% endif %}
+                            <div class="form-text">Only PDF files are accepted. Maximum size: 16MB.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.additional_notes.label(class="form-label") }}
+                            {% if form.additional_notes.errors %}
+                                {{ form.additional_notes(class="form-control is-invalid", rows=4) }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.additional_notes.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.additional_notes(class="form-control", rows=4) }}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

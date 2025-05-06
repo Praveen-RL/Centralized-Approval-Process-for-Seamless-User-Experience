@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="page-title">My Properties</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('property.register') }}" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> Register New Property
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            {% if properties %}
+                <div class="row row-cols-1 row-cols-md-2 g-4">
+                    {% for property in properties %}
+                        <div class="col">
+                            <div class="card h-100">
+                                <div class="card-header bg-light">
+                                    <h3 class="mb-0 property-title">{{ property.address|truncate(50) }}</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="property-details">
+                                        <p><strong>Patta Number:</strong> {{ property.patta_number }}</p>
+                                        <p><strong>Chitta Number:</strong> {{ property.chitta_number }}</p>
+                                        <p><strong>Location:</strong> {{ property.village }}, {{ property.taluk }}, {{ property.district }}</p>
+                                        <p><strong>Area:</strong> {{ property.area_sqft }} sq.ft.</p>
+                                        <p><strong>Registered on:</strong> {{ property.created_at.strftime('%d-%m-%Y') }}</p>
+                                    </div>
+                                    
+                                    <hr>
+                                    
+                                    <div class="approval-status-summary">
+                                        <h4>Approval Status</h4>
+                                        <div class="approval-icons">
+                                            {% set has_land = false %}
+                                            {% set has_water = false %}
+                                            {% set has_electricity = false %}
+                                            {% set has_sewage = false %}
+                                            
+                                            {% for approval in property.approvals %}
+                                                {% if approval.approval_type.value == 'land' %}
+                                                    {% set has_land = true %}
+                                                {% elif approval.approval_type.value == 'water' %}
+                                                    {% set has_water = true %}
+                                                {% elif approval.approval_type.value == 'electricity' %}
+                                                    {% set has_electricity = true %}
+                                                {% elif approval.approval_type.value == 'sewage' %}
+                                                    {% set has_sewage = true %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            
+                                            <div class="approval-icon {% if has_land %}has-approval{% endif %}" title="Land Approval">
+                                                <i class="fas fa-map-marked-alt"></i>
+                                                <span>Land</span>
+                                            </div>
+                                            <div class="approval-icon {% if has_water %}has-approval{% endif %}" title="Water Supply Approval">
+                                                <i class="fas fa-water"></i>
+                                                <span>Water</span>
+                                            </div>
+                                            <div class="approval-icon {% if has_electricity %}has-approval{% endif %}" title="Electricity Connection Approval">
+                                                <i class="fas fa-bolt"></i>
+                                                <span>Electricity</span>
+                                            </div>
+                                            <div class="approval-icon {% if has_sewage %}has-approval{% endif %}" title="Sewage and Sanitation Approval">
+                                                <i class="fas fa-toilet"></i>
+                                                <span>Sewage</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-light">
+                                    <a href="{{ url_for('property.detail', property_id=property.id) }}" class="btn btn-outline-primary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center empty-state p-5">
+                    <i class="fas fa-home fa-5x mb-3 text-muted"></i>
+                    <h3>No Properties Registered</h3>
+                    <p class="lead">You haven't registered any properties yet.</p>
+                    <a href="{{ url_for('property.register') }}" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus-circle"></i> Register Your First Property
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
