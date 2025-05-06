@@ -82,6 +82,12 @@ def admin_login():
         
         # Generate and send OTP
         otp = generate_otp()
+        
+        # For testing purposes, show the OTP in the flash message in development
+        if app.config['DEBUG']:
+            logging.info(f"DEBUG MODE: OTP for {email} is {otp}")
+            flash(f'DEBUG MODE: Your OTP is {otp}', 'warning')
+            
         if send_otp_via_api(email, otp):
             store_otp(email, otp)
             session['admin_email'] = email
