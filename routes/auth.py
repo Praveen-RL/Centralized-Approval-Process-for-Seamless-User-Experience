@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db
+from app import db, app
 from models import User, UserRole, OTP
 from forms import RegistrationForm, LoginForm, AdminLoginForm, OTPVerificationForm
-from utils import generate_otp, send_otp_via_api, store_otp, verify_otp, is_government_email
+from utils import generate_otp, send_otp_via_api, store_otp, verify_otp as verify_user_otp, is_government_email
 from datetime import datetime
 import logging
 
@@ -84,7 +84,7 @@ def admin_login():
         otp = generate_otp()
         
         # For testing purposes, show the OTP in the flash message in development
-        if app.config['DEBUG']:
+        if current_app.config['DEBUG']:
             logging.info(f"DEBUG MODE: OTP for {email} is {otp}")
             flash(f'DEBUG MODE: Your OTP is {otp}', 'warning')
             
@@ -108,7 +108,7 @@ def verify_otp():
         email = session['admin_email']
         otp_code = form.otp.data
         
-        if verify_otp(email, otp_code):
+        if verify_user_otp(email, otp_code):
             user = User.query.filter_by(email=email).first()
             login_user(user)
             user.last_login = datetime.utcnow()
