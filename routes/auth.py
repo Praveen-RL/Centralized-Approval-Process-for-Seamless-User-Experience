@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, app
 from models import User, UserRole, OTP
-from forms import RegistrationForm, LoginForm, AdminLoginForm, OTPVerificationForm
+from forms import RegistrationForm, LoginWithPasswordForm, CitizenLoginForm, AdminLoginForm, OTPVerificationForm
 from utils import generate_otp, send_otp_via_api, store_otp, verify_otp as verify_user_otp, is_government_email
 from datetime import datetime
 import logging
@@ -37,10 +37,49 @@ def register():
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
+    """Citizen login page with OTP option"""
     if current_user.is_authenticated:
         return redirect(url_for('user.dashboard'))
     
-    form = LoginForm()
+    # Show OTP login form by default
+    form = CitizenLoginForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        user = User.query.filter_by(email=email).first()
+        
+        if not user:
+            flash('Email not registered. Please register first.', 'danger')
+            return redirect(url_for('auth.register'))
+            
+        if user.role != UserRole.CITIZEN:
+            flash('Please use the government login page for admin access.', 'warning')
+            return redirect(url_for('auth.admin_login'))
+            
+        # Generate and send OTP
+        otp = generate_otp()
+        
+        # For testing purposes, show the OTP in the flash message in development
+        if current_app.config['DEBUG']:
+            logging.info(f"DEBUG MODE: OTP for citizen {email} is {otp}")
+            flash(f'DEBUG MODE: Your OTP is {otp}', 'warning')
+            
+        if send_otp_via_api(email, otp):
+            store_otp(email, otp)
+            session['citizen_email'] = email
+            flash('OTP has been sent to your email. Please verify to continue.', 'info')
+            return redirect(url_for('auth.verify_citizen_otp'))
+        else:
+            flash('Failed to send OTP. Please try again later.', 'danger')
+    
+    return render_template('auth/login.html', form=form, title='Citizen Login')
+
+@bp.route('/login-with-password', methods=['GET', 'POST'])
+def login_with_password():
+    """Alternative login with password for citizens"""
+    if current_user.is_authenticated:
+        return redirect(url_for('user.dashboard'))
+    
+    form = LoginWithPasswordForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         
@@ -55,7 +94,7 @@ def login():
         else:
             flash('Login unsuccessful. Please check your email and password.', 'danger')
     
-    return render_template('auth/login.html', form=form, title='Login')
+    return render_template('auth/login_with_password.html', form=form, title='Login with Password')
 
 @bp.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
@@ -100,6 +139,7 @@ def admin_login():
 
 @bp.route('/verify-otp', methods=['GET', 'POST'])
 def verify_otp():
+    """Verify OTP for admin users"""
     if 'admin_email' not in session:
         return redirect(url_for('auth.admin_login'))
     
@@ -120,7 +160,32 @@ def verify_otp():
         else:
             flash('Invalid or expired OTP. Please try again.', 'danger')
     
-    return render_template('auth/verify_otp.html', form=form, title='Verify OTP')
+    return render_template('auth/verify_otp.html', form=form, title='Verify Admin OTP')
+
+@bp.route('/verify-citizen-otp', methods=['GET', 'POST'])
+def verify_citizen_otp():
+    """Verify OTP for citizen users"""
+    if 'citizen_email' not in session:
+        return redirect(url_for('auth.login'))
+    
+    form = OTPVerificationForm()
+    if form.validate_on_submit():
+        email = session['citizen_email']
+        otp_code = form.otp.data
+        
+        if verify_user_otp(email, otp_code):
+            user = User.query.filter_by(email=email).first()
+            login_user(user)
+            user.last_login = datetime.utcnow()
+            db.session.commit()
+            
+            session.pop('citizen_email', None)
+            flash('OTP verification successful. Welcome!', 'success')
+            return redirect(url_for('user.dashboard'))
+        else:
+            flash('Invalid or expired OTP. Please try again.', 'danger')
+    
+    return render_template('auth/verify_citizen_otp.html', form=form, title='Verify OTP')
 
 @bp.route('/logout')
 @login_required
