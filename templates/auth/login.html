@@ -6,12 +6,12 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">Citizen Login</h2>
+                    <h2 class="mb-0">User Login</h2>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info">
-                        <p><i class="fas fa-info-circle"></i> Secure login with OTP</p>
-                        <p class="mb-0">Enter your registered email to receive a one-time password.</p>
+                        <p><i class="fas fa-info-circle"></i> Secure login with Password + OTP</p>
+                        <p class="mb-0">Enter your credentials to login. After password verification, an OTP will be sent to your email.</p>
                     </div>
 
                     <form method="POST" action="{{ url_for('auth.login') }}">
@@ -31,14 +31,27 @@
                             {% endif %}
                         </div>
                         
+                        <div class="mb-3">
+                            {{ form.password.label(class="form-label") }}
+                            {% if form.password.errors %}
+                                {{ form.password(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.password(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        
                         <div class="d-grid gap-2">
                             {{ form.submit(class="btn btn-primary") }}
                         </div>
                     </form>
                 </div>
                 <div class="card-footer text-center">
-                    <p class="mb-0">Prefer password login? <a href="{{ url_for('auth.login_with_password') }}">Login with Password</a></p>
-                    <p class="mb-0 mt-2">Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
+                    <p class="mb-0">Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
                     <p class="mb-0 mt-2">Are you a government official? <a href="{{ url_for('auth.admin_login') }}">Login here</a></p>
                 </div>
             </div>

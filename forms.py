@@ -27,14 +27,10 @@ class RegistrationForm(FlaskForm):
         if user:
             raise ValidationError('Email already registered. Please use a different one.')
 
-class CitizenLoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    submit = SubmitField('Send OTP')
-    
-class LoginWithPasswordForm(FlaskForm):
+class UserLoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Login')
+    submit = SubmitField('Login & Send OTP')
 
 class AdminLoginForm(FlaskForm):
     email = StringField('Official Email', validators=[
@@ -42,7 +38,8 @@ class AdminLoginForm(FlaskForm):
         Email(), 
         Regexp(r'.*@.*\.gov\.in$', message='Must be an official government email')
     ])
-    submit = SubmitField('Send OTP')
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login & Send OTP')
 
 class OTPVerificationForm(FlaskForm):
     otp = StringField('Enter OTP', validators=[

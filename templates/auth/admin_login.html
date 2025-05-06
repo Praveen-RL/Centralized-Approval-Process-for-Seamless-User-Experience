@@ -11,7 +11,7 @@
                 <div class="card-body">
                     <div class="alert alert-info">
                         <p><i class="fas fa-info-circle"></i> This login is only for authorized government officials.</p>
-                        <p class="mb-0">Please enter your official government email address to receive an OTP for secure login.</p>
+                        <p class="mb-0">Please enter your credentials to login. After password verification, an OTP will be sent to your email.</p>
                     </div>
                     
                     <form method="POST" action="{{ url_for('auth.admin_login') }}">
@@ -32,13 +32,27 @@
                             <small class="form-text text-muted">Only official government email addresses (ending with .gov.in) are accepted.</small>
                         </div>
                         
+                        <div class="mb-3">
+                            {{ form.password.label(class="form-label") }}
+                            {% if form.password.errors %}
+                                {{ form.password(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.password(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        
                         <div class="d-grid gap-2">
                             {{ form.submit(class="btn btn-primary") }}
                         </div>
                     </form>
                 </div>
                 <div class="card-footer text-center">
-                    <p class="mb-0">Are you a citizen? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+                    <p class="mb-0">Are you a user? <a href="{{ url_for('auth.login') }}">Login here</a></p>
                 </div>
             </div>
         </div>

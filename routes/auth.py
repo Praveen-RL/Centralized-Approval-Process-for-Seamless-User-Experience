@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, app
 from models import User, UserRole, OTP
-from forms import RegistrationForm, LoginWithPasswordForm, CitizenLoginForm, AdminLoginForm, OTPVerificationForm
+from forms import RegistrationForm, UserLoginForm, AdminLoginForm, OTPVerificationForm
 from utils import generate_otp, send_otp_via_api, store_otp, verify_otp as verify_user_otp, is_government_email
 from datetime import datetime
 import logging
@@ -37,14 +37,15 @@ def register():
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
-    """Citizen login page with OTP option"""
+    """User login with password then OTP"""
     if current_user.is_authenticated:
         return redirect(url_for('user.dashboard'))
     
-    # Show OTP login form by default
-    form = CitizenLoginForm()
+    form = UserLoginForm()
     if form.validate_on_submit():
         email = form.email.data
+        password = form.password.data
+        
         user = User.query.filter_by(email=email).first()
         
         if not user:
@@ -55,46 +56,28 @@ def login():
             flash('Please use the government login page for admin access.', 'warning')
             return redirect(url_for('auth.admin_login'))
             
-        # Generate and send OTP
+        # Verify password first
+        if not user.check_password(password):
+            flash('Invalid email or password. Please try again.', 'danger')
+            return render_template('auth/login.html', form=form, title='User Login')
+            
+        # Password is correct, generate and send OTP
         otp = generate_otp()
         
         # For testing purposes, show the OTP in the flash message in development
         if current_app.config['DEBUG']:
-            logging.info(f"DEBUG MODE: OTP for citizen {email} is {otp}")
+            logging.info(f"DEBUG MODE: OTP for user {email} is {otp}")
             flash(f'DEBUG MODE: Your OTP is {otp}', 'warning')
             
         if send_otp_via_api(email, otp):
             store_otp(email, otp)
             session['citizen_email'] = email
-            flash('OTP has been sent to your email. Please verify to continue.', 'info')
+            flash('Password verified. OTP has been sent to your email.', 'info')
             return redirect(url_for('auth.verify_citizen_otp'))
         else:
             flash('Failed to send OTP. Please try again later.', 'danger')
     
-    return render_template('auth/login.html', form=form, title='Citizen Login')
-
-@bp.route('/login-with-password', methods=['GET', 'POST'])
-def login_with_password():
-    """Alternative login with password for citizens"""
-    if current_user.is_authenticated:
-        return redirect(url_for('user.dashboard'))
-    
-    form = LoginWithPasswordForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        
-        if user and user.check_password(form.password.data):
-            login_user(user)
-            user.last_login = datetime.utcnow()
-            db.session.commit()
-            
-            next_page = request.args.get('next')
-            flash('Login successful!', 'success')
-            return redirect(next_page or url_for('user.dashboard'))
-        else:
-            flash('Login unsuccessful. Please check your email and password.', 'danger')
-    
-    return render_template('auth/login_with_password.html', form=form, title='Login with Password')
+    return render_template('auth/login.html', form=form, title='User Login')
 
 @bp.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
@@ -104,6 +87,7 @@ def admin_login():
     form = AdminLoginForm()
     if form.validate_on_submit():
         email = form.email.data
+        password = form.password.data
         
         if not is_government_email(email):
             flash('Only official government email addresses are allowed.', 'danger')
@@ -118,19 +102,24 @@ def admin_login():
         if user.role == UserRole.CITIZEN:
             flash('You are not authorized to access the admin panel.', 'danger')
             return render_template('auth/admin_login.html', form=form, title='Admin Login')
+            
+        # Verify password first
+        if not user.check_password(password):
+            flash('Invalid email or password. Please try again.', 'danger')
+            return render_template('auth/admin_login.html', form=form, title='Admin Login')
         
-        # Generate and send OTP
+        # Password is correct, generate and send OTP
         otp = generate_otp()
         
         # For testing purposes, show the OTP in the flash message in development
         if current_app.config['DEBUG']:
-            logging.info(f"DEBUG MODE: OTP for {email} is {otp}")
+            logging.info(f"DEBUG MODE: OTP for admin {email} is {otp}")
             flash(f'DEBUG MODE: Your OTP is {otp}', 'warning')
             
         if send_otp_via_api(email, otp):
             store_otp(email, otp)
             session['admin_email'] = email
-            flash('OTP has been sent to your email. Please verify to continue.', 'info')
+            flash('Password verified. OTP has been sent to your email.', 'info')
             return redirect(url_for('auth.verify_otp'))
         else:
             flash('Failed to send OTP. Please try again later.', 'danger')
