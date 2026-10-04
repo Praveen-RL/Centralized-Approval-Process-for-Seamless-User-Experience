@@ -12,7 +12,7 @@ class UserRole(enum.Enum):
     SEWAGE_ADMIN = "sewage_admin"
     SUPER_ADMIN = "super_admin"
 
-class User(UserMixin, db.Model):
+class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -39,7 +39,7 @@ class User(UserMixin, db.Model):
 
 class Property(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     patta_number = db.Column(db.String(50), nullable=False)
     chitta_number = db.Column(db.String(50), nullable=False)
     address = db.Column(db.Text, nullable=False)
@@ -76,7 +76,7 @@ class Approval(db.Model):
     application_date = db.Column(db.DateTime, default=datetime.utcnow)
     document_path = db.Column(db.String(255), nullable=False)
     additional_notes = db.Column(db.Text)
-    admin_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    admin_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     admin_notes = db.Column(db.Text)
     approved_date = db.Column(db.DateTime)
     last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

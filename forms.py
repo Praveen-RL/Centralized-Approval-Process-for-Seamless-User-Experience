@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, FloatField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError, Regexp
-from models import User
+from models import Users
 
 class RegistrationForm(FlaskForm):
     full_name = StringField('Full Name', validators=[DataRequired(), Length(min=3, max=100)])
@@ -18,12 +18,12 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Register')
     
     def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
+        user = Users.query.filter_by(username=username.data).first()
         if user:
             raise ValidationError('Username already taken. Please choose a different one.')
     
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
+        user = Users.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('Email already registered. Please use a different one.')
 

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, app
-from models import User, UserRole, OTP
+from models import Users, UserRole, OTP
 from forms import RegistrationForm, UserLoginForm, AdminLoginForm, OTPVerificationForm
 from utils import generate_otp, send_otp_via_api, store_otp, verify_otp as verify_user_otp, is_government_email
 from datetime import datetime
@@ -17,7 +17,7 @@ def register():
     
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(
+        user = Users(
             username=form.username.data,
             email=form.email.data,
             full_name=form.full_name.data,
@@ -46,7 +46,7 @@ def login():
         email = form.email.data
         password = form.password.data
         
-        user = User.query.filter_by(email=email).first()
+        user = Users.query.filter_by(email=email).first()
         
         if not user:
             flash('Email not registered. Please register first.', 'danger')
@@ -93,7 +93,7 @@ def admin_login():
             flash('Only official government email addresses are allowed.', 'danger')
             return render_template('auth/admin_login.html', form=form, title='Admin Login')
         
-        user = User.query.filter_by(email=email).first()
+        user = Users.query.filter_by(email=email).first()
         
         if not user:
             flash('Email not registered. Please contact the system administrator.', 'danger')
@@ -138,7 +138,7 @@ def verify_otp():
         otp_code = form.otp.data
         
         if verify_user_otp(email, otp_code):
-            user = User.query.filter_by(email=email).first()
+            user = Users.query.filter_by(email=email).first()
             login_user(user)
             user.last_login = datetime.utcnow()
             db.session.commit()
@@ -163,7 +163,7 @@ def verify_citizen_otp():
         otp_code = form.otp.data
         
         if verify_user_otp(email, otp_code):
-            user = User.query.filter_by(email=email).first()
+            user = Users.query.filter_by(email=email).first()
             login_user(user)
             user.last_login = datetime.utcnow()
             db.session.commit()

@@ -82,8 +82,8 @@ def status(approval_id):
         if current_user.role.value != expected_role:
             abort(403)
     
-    # Get document path for preview
-    document_path = os.path.join('/', approval.document_path) if approval.document_path else None
+    # Generate document URL using url_for
+    document_path = url_for('serve_upload', filename=os.path.basename(approval.document_path)) if approval.document_path else None
     
     return render_template('user/approval_status.html', 
                           approval=approval, 

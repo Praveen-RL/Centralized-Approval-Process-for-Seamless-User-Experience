@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
 from flask_login import login_required, current_user
 from app import db
-from models import User, Property, Approval, UserRole, ApprovalStatus, ApprovalType
+from models import Users, Property, Approval, UserRole, ApprovalStatus, ApprovalType
 from forms import AdminApprovalForm
 from utils import get_approval_department, get_role_for_approval_type, send_notification_email
 from datetime import datetime
@@ -95,7 +95,7 @@ def approval_requests():
             pass
     
     # Get all approvals with property and owner information
-    approvals = approvals_query.join(Property).join(User, Property.user_id == User.id) \
+    approvals = approvals_query.join(Property).join(Users, Property.user_id == Users.id) \
         .order_by(Approval.application_date.desc()) \
         .all()
     
@@ -114,7 +114,7 @@ def approval_detail(approval_id):
     
     approval = Approval.query.get_or_404(approval_id)
     property = Property.query.get(approval.property_id)
-    owner = User.query.get(property.user_id)
+    owner = Users.query.get(property.user_id)
     
     # Check if admin has authority over this approval type
     if current_user.role != UserRole.SUPER_ADMIN:
@@ -159,8 +159,8 @@ Tamil Nadu Government House Construction Approval System
     if request.method == 'GET' and approval.admin_notes:
         form.admin_notes.data = approval.admin_notes
     
-    # Get document path for preview
-    document_path = os.path.join('/', approval.document_path) if approval.document_path else None
+    # Generate document URL using url_for
+    document_path = url_for('serve_upload', filename=os.path.basename(approval.document_path)) if approval.document_path else None
     
     return render_template('admin/approval_detail.html',
                           approval=approval,

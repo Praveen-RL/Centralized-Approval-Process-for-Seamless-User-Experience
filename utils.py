@@ -93,10 +93,11 @@ def save_document(file):
         upload_folder = current_app.config['UPLOAD_FOLDER']
         os.makedirs(upload_folder, exist_ok=True)
         
+        # Save file and return relative path
         file_path = os.path.join(upload_folder, new_filename)
         file.save(file_path)
         logging.info(f"Document saved: {file_path}")
-        return file_path
+        return os.path.join('uploads', new_filename)  # Return relative path
     
     logging.error("Invalid file upload attempt")
     return None

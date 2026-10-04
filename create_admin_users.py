@@ -3,9 +3,9 @@
 Script to create admin users in the database
 """
 import os
-import sys
+import sys61
 from app import app, db
-from models import User, UserRole
+from models import Users, UserRole
 from werkzeug.security import generate_password_hash
 from datetime import datetime
 
@@ -13,13 +13,13 @@ def create_admin_user(username, email, full_name, phone, role, password):
     """Create an admin user if it doesn't exist"""
     with app.app_context():
         # Check if user already exists
-        existing_user = User.query.filter_by(email=email).first()
+        existing_user = Users.query.filter_by(email=email).first()
         if existing_user:
             print(f"User with email {email} already exists. Skipping.")
             return existing_user
         
         # Create new user
-        user = User(
+        user = Users(
             username=username,
             email=email,
             full_name=full_name,
